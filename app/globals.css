@@ -1,26 +1,200 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  /* Dark theme colors */
+  --color-background: #1a1a1a;
+  --color-surface: #242424;
+  --color-surface-elevated: #2d2d2d;
+
+  /* Green accent colors */
+  --color-primary: #4ade80;
+  --color-primary-hover: #22c55e;
+  --color-primary-light: rgba(74, 222, 128, 0.1);
+
+  /* Text colors */
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #737373;
+
+  /* Border colors */
+  --color-border: #404040;
+  --color-border-light: #525252;
+
+  /* Status colors */
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-success: #4ade80;
+  --color-success-bg: rgba(74, 222, 128, 0.1);
+  --color-warning: #fbbf24;
+
+  /* Loading skeleton */
+  --color-skeleton: #404040;
+  --color-skeleton-shimmer: #525252;
+
+  /* Animations */
+  --animate-shimmer: shimmer 2s infinite linear;
+  --animate-check: check 0.5s ease-in-out;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer base {
+  body {
+    @apply bg-background text-text-primary;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: var(--color-surface);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-border-light);
+    border-radius: 5px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer components {
+
+  /* Button styles */
+  .btn-primary {
+    @apply bg-primary text-background font-medium px-4 py-2 rounded-lg;
+    @apply hover:bg-primary-hover transition-colors;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background;
+  }
+
+  .btn-secondary {
+    @apply bg-surface text-text-primary border border-border font-medium px-4 py-2 rounded-lg;
+    @apply hover:bg-surface-elevated transition-colors;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-surface border border-border rounded-lg p-6;
+  }
+
+  .card-elevated {
+    @apply bg-surface-elevated border border-border rounded-lg p-6;
+  }
+
+  /* Input styles */
+  .input {
+    @apply bg-surface border border-border text-text-primary rounded-lg px-4 py-2;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+    @apply placeholder:text-text-muted;
+  }
+
+  .input-error {
+    @apply border-error focus:ring-error;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply inline-block animate-spin rounded-full border-2 border-border border-t-primary;
+  }
+
+  .spinner-sm {
+    @apply w-4 h-4;
+  }
+
+  .spinner-md {
+    @apply w-8 h-8;
+  }
+
+  .spinner-lg {
+    @apply w-12 h-12;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply w-full bg-surface-elevated rounded-full h-2 overflow-hidden;
+  }
+
+  .progress-bar-fill {
+    @apply bg-primary h-full transition-all duration-300 rounded-full;
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    @apply bg-skeleton animate-pulse rounded;
+  }
+
+  /* Error message */
+  .error-message {
+    @apply bg-error-bg border border-error text-text-primary rounded-lg p-4;
+    @apply flex items-start gap-3;
+  }
+
+  /* Success message */
+  .success-message {
+    @apply bg-success-bg border border-success text-text-primary rounded-lg p-4;
+    @apply flex items-center gap-3;
+  }
+
+  /* Tooltip */
+  .tooltip {
+    @apply absolute bg-surface-elevated border border-border text-text-primary text-sm rounded-lg px-3 py-2;
+    @apply shadow-lg z-50;
+  }
+
+  /* Empty state */
+  .empty-state {
+    @apply flex flex-col items-center justify-center gap-4 p-8 text-center;
+  }
+
+  .empty-state-icon {
+    @apply text-text-muted;
+  }
+
+  .empty-state-text {
+    @apply text-text-secondary;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Custom animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes check {
+  0% {
+    stroke-dashoffset: 50;
+  }
+
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(90deg,
+      var(--color-skeleton) 0%,
+      var(--color-skeleton-shimmer) 50%,
+      var(--color-skeleton) 100%);
+  background-size: 200% 100%;
+}
+
+.animate-check {
+  animation: check 0.5s ease-in-out;
 }
