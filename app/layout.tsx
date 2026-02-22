@@ -14,8 +14,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Your App",
-  description: "Dark mode with green accent",
+  // Tên hiển thị trên tab trình duyệt
+  title: "SportBooking - Đặt Sân Cầu Lông & Bóng Đá",
+
+  // Mô tả hiển thị khi chia sẻ link hoặc tìm kiếm trên Google
+  description: "Tìm kiếm và đặt lịch sân thể thao trực tuyến nhanh chóng. Hệ thống đặt sân uy tín, giá tốt và nhiều ưu đãi.",
+
+  // (Nâng cao) Thêm icon nếu bạn muốn đổi logo tam giác mặc định
+  icons: {
+    icon: '/logo.png', // File ảnh trong thư mục public
+  },
 };
 
 export default function RootLayout({

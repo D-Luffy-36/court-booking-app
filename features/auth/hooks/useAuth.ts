@@ -23,6 +23,11 @@ export function useAuth(): AuthState {
     // Tạo Supabase client để gọi auth API
     const supabase = createClient()
 
+    // 🚀 Bổ sung hàm Logout
+    const signOut = async () => {
+        await supabase.auth.signOut()
+    }
+
     useEffect(() => {
 
         /**
@@ -63,6 +68,7 @@ export function useAuth(): AuthState {
         user,                       // user object hoặc null
         loading,                    // đang check session hay không
         isAuthenticated: !!user,    // boolean tiện cho guard UI
-        userId: user?.id ?? null
+        userId: user?.id ?? null,
+        signOut,            // hàm logout để UI gọi
     }
 }

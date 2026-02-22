@@ -49,10 +49,11 @@ export function LoginForm() {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-text-secondary">
+                        <label htmlFor="email" className="block text-sm font-medium mb-2 text-text-secondary">
                             Email
                         </label>
                         <input
+                            id="email"
                             type="email"
                             name="email"
                             required
@@ -62,10 +63,19 @@ export function LoginForm() {
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium mb-2 text-text-secondary">
-                            Mật khẩu
-                        </label>
+                        <div className="flex items-center justify-between mb-2">
+                            <label htmlFor="password" className="block text-sm font-medium text-text-secondary">
+                                Mật khẩu
+                            </label>
+                            <Link
+                                href="/forgot-password"
+                                className="text-sm text-primary hover:text-primary-hover font-medium underline-offset-4 hover:underline"
+                            >
+                                Quên mật khẩu?
+                            </Link>
+                        </div>
                         <input
+                            id="password"
                             type="password"
                             name="password"
                             required

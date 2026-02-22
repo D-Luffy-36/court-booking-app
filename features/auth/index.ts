@@ -1,13 +1,11 @@
-// ===== Hooks =====
-export * from './hooks/useAuth'
+// Auto-generated index for feature: auth
 
-// ===== Services =====
-export * from './services/auth.service'
-
-// ===== Components =====
-export * from './components/AuthButton'
-export * from './components/LoginForm'
-export * from './components/RegisterForm'
-
-// ===== Types =====
-export * from './types/auth.types'
+export * from './components/AuthButton';
+export * from './components/ForgotPasswordForm';
+export * from './components/LoginForm';
+export * from './components/RegisterForm';
+export * from './components/ResetPasswordForm';
+export * from './components/route';
+export * from './hooks/useAuth';
+export * from './services/auth.service';
+export * from './types/auth.types';

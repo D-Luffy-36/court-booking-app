@@ -27,7 +27,13 @@
     "paths": {
       "@/*": [
         "./*"
-      ]
+      ],
+      "@shared/*": [
+        "./shared/*"
+      ],
+      "@lib/*": [
+        "./lib/*"
+      ] // Giả sử thư mục lib nằm ở thư mục gốc
     }
   },
   "include": [

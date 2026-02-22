@@ -20,6 +20,7 @@ export const authApi = {
                 // metadata lưu vào auth.users.raw_user_meta_data
                 data: {
                     full_name,
+                    role: 'user', // mặc định role là 'user', có thể dùng để phân quyền sau này
                 },
             },
         })

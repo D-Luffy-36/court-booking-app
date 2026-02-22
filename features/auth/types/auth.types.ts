@@ -21,4 +21,5 @@ export type AuthState = {
     loading: boolean
     isAuthenticated: boolean
     userId: string | null
+    signOut: () => Promise<void>
 }

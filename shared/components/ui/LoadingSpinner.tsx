@@ -1,7 +1,7 @@
 /* =========================
    1. Loading Spinner
 ========================= */
-export function Spinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
+export function LoadingSpinner({ size = 'md' }: { size?: 'sm' | 'md' | 'lg' }) {
     const sizeClass = {
         sm: 'spinner-sm',
         md: 'spinner-md',
