@@ -35,3 +35,10 @@ Tư duy: Chặn người dùng chưa đăng nhập vào các trang (admin) hoặ
 
 Prompt: "Viết file middleware.ts cho Next.js App Router. Nếu người dùng chưa login mà vào các đường dẫn bắt đầu bằng "/dashboard", hãy redirect họ về /login. Sử dụng @supabase/auth-helpers-nextjs.
 và show cấu trúc thư mục, không dùng src"
+
+
+Prompt để AI tối ưu cho bạn:
+"Hãy hoàn thiện file middleware.ts của tôi.
+Sử dụng matcher để bỏ qua các file tĩnh (next/static, favicon, images).
+Chèn logic check role 'admin' từ bảng profiles trong Supabase.
+Nếu user là 'admin' mà truy cập trang chủ /, hãy tự động redirect họ vào /dashboard."

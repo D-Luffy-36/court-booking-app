@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { authApi } from '@/features/auth'
+import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
@@ -11,6 +12,7 @@ export function RegisterForm() {
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState(false)
 
+    // Sử dụng Supabase client-side client
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setLoading(true)
@@ -23,6 +25,22 @@ export function RegisterForm() {
 
         try {
             await authApi.register({ email, password, full_name })
+            const supabase = createClient()
+            const { error: signUpError } = await supabase.auth.signUp({
+                email,
+                password,
+                options: {
+                    // Truyền thông tin bổ sung vào metadata của user
+                    data: {
+                        full_name: full_name,
+                    },
+                },
+            })
+
+            if (signUpError) {
+                throw signUpError
+            }
+
             setSuccess(true)
             setTimeout(() => router.push('/login'), 2000)
         } catch (err: any) {

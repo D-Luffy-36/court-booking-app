@@ -54,39 +54,51 @@ export function CourtList() {
                 {courts.map((court) => (
                     <div
                         key={court.id}
-                        className="card hover:border-primary/50 transition-all group relative overflow-hidden"
+                        className="card hover:border-primary/50 transition-all group relative overflow-hidden flex flex-col justify-between"
                     >
-                        {/* Tên sân và Loại */}
+                        {/* Header: Tên sân và Badge loại sân */}
                         <div className="mb-4">
-                            <h3 className="text-xl font-bold text-text-primary group-hover:text-primary transition-colors">
-                                {court.name}
-                            </h3>
-                            <p className="text-text-secondary text-sm">{court.type}</p>
+                            <div className="flex justify-between items-start gap-2">
+                                <h3 className="text-xl font-bold text-text-primary group-hover:text-primary transition-colors truncate">
+                                    {court.name}
+                                </h3>
+                                {/* Badge loại sân: Giúp phân biệt rõ 'Sân 1' và 'Sân 5' */}
+                                <span className="shrink-0 bg-secondary/10 text-secondary text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border border-secondary/20">
+                                    {court.pitch_size} NGƯỜI
+                                </span>
+                            </div>
+                            {/* Thêm một icon nhỏ để sub-info trông chuyên nghiệp hơn */}
+                            <p className="text-text-secondary text-xs mt-1 flex items-center gap-1">
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                </svg>
+                                Khu vực: Sân bóng cỏ nhân tạo
+                            </p>
                         </div>
 
                         {/* Giá tiền */}
                         <div className="mb-6">
-                            <p className="text-2xl font-bold text-primary">
+                            <p className="text-2xl font-bold text-primary italic">
                                 {court.price_per_hour.toLocaleString('vi-VN')}
-                                <span className="text-xs text-text-muted font-normal ml-1">đ/giờ</span>
+                                <span className="text-xs text-text-muted font-normal ml-1 not-italic">đ/giờ</span>
                             </p>
                         </div>
 
-                        {/* Trạng thái sử dụng các biến màu CSS */}
-                        <div className="flex items-center justify-between">
+                        {/* Trạng thái và Link */}
+                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
                             <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium border ${court.is_available
-                                    ? 'bg-success-bg text-success border-success/20'
-                                    : 'bg-error-bg text-error border-error/20'
+                                className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase ${court.is_available
+                                    ? 'bg-success/10 text-success'
+                                    : 'bg-error/10 text-error'
                                     }`}
                             >
-                                {court.is_available ? '● Có sẵn' : '● Đã đặt'}
+                                {court.is_available ? '● Trống' : '● Đang đá'}
                             </span>
                             <Link
                                 href={`/dashboard/courts/${court.id}`}
-                                className="text-text-muted hover:text-primary text-sm transition-colors"
+                                className="text-primary font-medium hover:underline text-sm transition-all"
                             >
-                                Chi tiết →
+                                Đặt sân ngay
                             </Link>
                         </div>
                     </div>

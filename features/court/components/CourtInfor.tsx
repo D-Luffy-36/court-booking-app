@@ -24,25 +24,21 @@ export default function CourtInfo({ court }: CourtInfoProps) {
 
             {/* Grid nội dung */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-4">
-                <InfoRow label="Loại sân" value={court.type} />
-
-                <InfoRow
-                    label="Giá thuê"
-                    value={formattedPrice}
-                    valueClassName="text-primary font-bold"
-                />
-
-                <InfoRow
-                    label="Ngày tạo"
-                    value={formattedDate}
-                    valueClassName="text-text-primary italic text-sm"
-                />
-
-                <InfoRow
-                    label="Kích thước"
-                    value="Tiêu chuẩn"
-                />
+                {[
+                    { label: "Loại sân", value: court.type, className: "text-primary italic" },
+                    { label: "Giá thuê", value: formattedPrice, className: "text-primary font-bold italic" },
+                    { label: "Ngày tạo", value: formattedDate, className: "text-primary italic text-sm" },
+                    { label: "Kích thước", value: court.pitch_size ? `${court.pitch_size}` : "---", className: "text-primary italic text-sm" },
+                ].map((item, idx) => (
+                    <InfoRow
+                        key={idx}
+                        label={item.label}
+                        value={item.value}
+                        valueClassName={item.className}
+                    />
+                ))}
             </div>
+
         </div>
     );
 }

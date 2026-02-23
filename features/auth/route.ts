@@ -5,8 +5,6 @@ import type { NextRequest } from 'next/server'
 export async function GET(request: NextRequest) {
     const { searchParams, origin } = new URL(request.url)
     const code = searchParams.get('code')
-    // Lấy path cần redirect tới, mặc định là dashboard hoặc trang chủ
-    const next = searchParams.get('next') ?? '/dashboard'
 
     if (code) {
         const supabase = await createClient()
@@ -17,8 +15,25 @@ export async function GET(request: NextRequest) {
         const { error } = await supabase.auth.exchangeCodeForSession(code)
 
         if (!error) {
-            // Sử dụng URL object để tạo link redirect an toàn hơn
-            return NextResponse.redirect(`${origin}${next}`)
+            const supabase = await createClient();
+            // 1. Lấy user id từ session vừa tạo
+            const { data: { user } } = await supabase.auth.getUser();
+
+            // 2. Truy vấn role từ bảng profiles (giả sử bạn có bảng này)
+            const { data: profile } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', user?.id)
+                .single();
+
+            // 3. Điều hướng dựa trên role
+            if (profile?.role === 'admin') {
+                return NextResponse.redirect(`${origin}/dashboard`);
+            }
+
+            // Mặc định hoặc là user thường
+            return NextResponse.redirect(`${origin}/`);
+
         }
     }
 
