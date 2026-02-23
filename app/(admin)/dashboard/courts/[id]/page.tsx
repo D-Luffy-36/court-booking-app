@@ -1,22 +1,30 @@
 // app/dashboard/courts/[id]/page.tsx
 import { createClient } from "@/lib/supabase/server";
 import { notFound } from "next/navigation";
-import CourtDetail from "@/features/court/components/CourtDetail";
+import AdminCourtDetail from "@/features/court/components/AdminCourtDetail";
 import { Court } from "@/features/court/types/court.types";
 
 interface PageProps {
+    // Trong Next.js 15, params phải là một Promise
     params: Promise<{ id: string }>;
 }
 
 export default async function CourtDetailPage({ params }: PageProps) {
-    const { id } = await params;
-    const supabase = await createClient();
 
-    const { data, error } = await supabase
+    // 1. PHẢI CÓ DÒNG NÀY:
+    const { id } = await params;
+
+    console.log("Received params:", { id });
+
+    const supabase = createClient();
+
+    const { data, error } = await (await supabase)
         .from('courts')
         .select('*')
         .eq('id', id)
         .single();
+
+    console.log("Fetched court data:", data, "Error:", error);
 
     // Ép kiểu về Court từ Database types
     const court = data as Court;
@@ -25,5 +33,5 @@ export default async function CourtDetailPage({ params }: PageProps) {
         notFound();
     }
 
-    return <CourtDetail court={court} />;
+    return <AdminCourtDetail court={court} />;
 }

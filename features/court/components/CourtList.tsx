@@ -1,109 +1,93 @@
-// features/court/components/CourtList.tsx
 'use client'
 
-import { LoadingSpinner } from '@/shared/components/ui/LoadingSpinner'
-import { useCourts } from '../hooks/useCourts'
 import Link from 'next/link'
+import { Court } from '../types/court.types'
+import { MoreHorizontal, Edit, Trash2, Power, PlusCircle } from 'lucide-react'
+import { toast } from 'sonner'
 
-export function CourtList() {
-    const { courts, loading, error } = useCourts()
+interface CourtListProps {
+    courts: Court[]
+}
 
-    // Sử dụng class .spinner đã định nghĩa trong CSS
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center p-20 gap-4">
-                <LoadingSpinner size="lg" />
-                <p className="text-text-secondary animate-pulse">Đang tải danh sách sân...</p>
-            </div>
-        )
-    }
-
-    // Sử dụng class .error-message đã định nghĩa trong CSS
-    if (error) {
-        return (
-            <div className="error-message">
-                <span>⚠️</span>
-                <div>
-                    <p className="font-bold">Đã có lỗi xảy ra</p>
-                    <p className="text-sm opacity-90">{error}</p>
-                </div>
-            </div>
-        )
-    }
-
-    // Sử dụng class .empty-state đã định nghĩa trong CSS
+// Component này đã được refactor thành Bảng Quản lý dành cho Admin.
+export function CourtList({ courts = [] }: CourtListProps) {
     if (courts.length === 0) {
         return (
-            <div className="empty-state card">
-                <span className="text-4xl mb-2">🏟️</span>
-                <p className="empty-state-text text-lg font-medium">Không có sân nào trong hệ thống</p>
-                <p className="text-text-muted text-sm">Vui lòng thêm sân mới để bắt đầu quản lý.</p>
+            <div className="empty-state card py-12 flex flex-col items-center justify-center border-2 border-dashed border-border">
+                <div className="w-20 h-20 bg-muted rounded-full flex items-center justify-center mb-4">
+                    <span className="text-5xl">🏟️</span>
+                </div>
+                <h2 className="text-xl font-semibold text-text-primary">Chưa có sân nào được tạo</h2>
+                <p className="text-text-muted mt-2">Bắt đầu quản lý bằng cách thêm sân mới.</p>
+                <Link href="/dashboard/courts/new" className="btn-primary mt-4 inline-flex items-center gap-2">
+                    <PlusCircle className="h-4 w-4" />
+                    Thêm sân mới
+                </Link>
             </div>
         )
+    }
+
+    const handleToggleStatus = async (court: Court) => {
+        // TODO: Gọi server action để thay đổi trạng thái sân
+        toast.success(`Trạng thái sân "${court.name}" đã được cập nhật.`)
+    }
+
+    const handleDelete = async (court: Court) => {
+        // TODO: Gọi server action để xóa sân
+        if (window.confirm(`Bạn có chắc chắn muốn xóa sân "${court.name}"? Hành động này không thể hoàn tác.`)) {
+            toast.success(`Đã xóa sân "${court.name}".`)
+        }
     }
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-2xl font-bold text-primary flex items-center gap-2">
-                <span className="w-2 h-8 bg-primary rounded-full"></span>
-                Danh sách sân
-            </h2>
-
-            {/* Grid Responsive */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {courts.map((court) => (
-                    <div
-                        key={court.id}
-                        className="card hover:border-primary/50 transition-all group relative overflow-hidden flex flex-col justify-between"
-                    >
-                        {/* Header: Tên sân và Badge loại sân */}
-                        <div className="mb-4">
-                            <div className="flex justify-between items-start gap-2">
-                                <h3 className="text-xl font-bold text-text-primary group-hover:text-primary transition-colors truncate">
-                                    {court.name}
-                                </h3>
-                                {/* Badge loại sân: Giúp phân biệt rõ 'Sân 1' và 'Sân 5' */}
-                                <span className="shrink-0 bg-secondary/10 text-secondary text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded border border-secondary/20">
-                                    {court.pitch_size} NGƯỜI
+        <div className="bg-card rounded-lg border border-border overflow-hidden">
+            <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                    <tr>
+                        <th className="p-4 text-left font-semibold text-text-secondary">Tên sân</th>
+                        <th className="p-4 text-left font-semibold text-text-secondary">Trạng thái</th>
+                        <th className="p-4 text-left font-semibold text-text-secondary">Loại sân</th>
+                        <th className="p-4 text-left font-semibold text-text-secondary">Giá (VND/giờ)</th>
+                        <th className="p-4 text-center font-semibold text-text-secondary">Lượt đặt hôm nay</th>
+                        <th className="p-4 text-right font-semibold text-text-secondary">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {courts.map((court) => (
+                        <tr key={court.id} className="border-t border-border hover:bg-muted/50 transition-colors">
+                            <td className="p-4 font-medium text-text-primary">{court.name}</td>
+                            <td className="p-4">
+                                <div className="flex items-center gap-2">
+                                    <span className={`w-2 h-2 rounded-full ${court.is_available ? 'bg-success' : 'bg-error'}`}></span>
+                                    <span className={`font-medium ${court.is_available ? 'text-success' : 'text-error'}`}>
+                                        {court.is_available ? 'Đang mở' : 'Đang đóng'}
+                                    </span>
+                                </div>
+                            </td>
+                            <td className="p-4">
+                                <span className="bg-background text-text-secondary text-xs font-bold px-2 py-1 rounded border border-border">
+                                    {court.pitch_size}
                                 </span>
-                            </div>
-                            {/* Thêm một icon nhỏ để sub-info trông chuyên nghiệp hơn */}
-                            <p className="text-text-secondary text-xs mt-1 flex items-center gap-1">
-                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                </svg>
-                                Khu vực: Sân bóng cỏ nhân tạo
-                            </p>
-                        </div>
-
-                        {/* Giá tiền */}
-                        <div className="mb-6">
-                            <p className="text-2xl font-bold text-primary italic">
-                                {court.price_per_hour.toLocaleString('vi-VN')}
-                                <span className="text-xs text-text-muted font-normal ml-1 not-italic">đ/giờ</span>
-                            </p>
-                        </div>
-
-                        {/* Trạng thái và Link */}
-                        <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                            <span
-                                className={`px-3 py-1 rounded-full text-[11px] font-bold uppercase ${court.is_available
-                                    ? 'bg-success/10 text-success'
-                                    : 'bg-error/10 text-error'
-                                    }`}
-                            >
-                                {court.is_available ? '● Trống' : '● Đang đá'}
-                            </span>
-                            <Link
-                                href={`/dashboard/courts/${court.id}`}
-                                className="text-primary font-medium hover:underline text-sm transition-all"
-                            >
-                                Đặt sân ngay
-                            </Link>
-                        </div>
-                    </div>
-                ))}
-            </div>
+                            </td>
+                            <td className="p-4 text-text-secondary">{court.price_per_hour.toLocaleString('vi-VN')}</td>
+                            <td className="p-4 text-center text-text-secondary font-mono">5</td>
+                            <td className="p-4 text-right">
+                                <div className="flex items-center justify-end gap-2">
+                                    <button onClick={() => handleToggleStatus(court)} title={court.is_available ? 'Tạm đóng sân' : 'Mở lại sân'} className="p-2 text-text-secondary hover:text-primary transition-colors">
+                                        <Power className="h-4 w-4" />
+                                    </button>
+                                    <Link href={`/dashboard/courts/${court.id}`} title="Chỉnh sửa" className="p-2 text-text-secondary hover:text-primary transition-colors">
+                                        <Edit className="h-4 w-4" />
+                                    </Link>
+                                    <button onClick={() => handleDelete(court)} title="Xóa sân" className="p-2 text-text-secondary hover:text-error transition-colors">
+                                        <Trash2 className="h-4 w-4" />
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
         </div>
     )
 }
