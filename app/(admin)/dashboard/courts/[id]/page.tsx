@@ -14,8 +14,6 @@ export default async function CourtDetailPage({ params }: PageProps) {
     // 1. PHẢI CÓ DÒNG NÀY:
     const { id } = await params;
 
-    console.log("Received params:", { id });
-
     const supabase = createClient();
 
     const { data, error } = await (await supabase)
@@ -23,8 +21,6 @@ export default async function CourtDetailPage({ params }: PageProps) {
         .select('*')
         .eq('id', id)
         .single();
-
-    console.log("Fetched court data:", data, "Error:", error);
 
     // Ép kiểu về Court từ Database types
     const court = data as Court;

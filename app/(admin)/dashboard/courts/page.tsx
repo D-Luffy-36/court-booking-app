@@ -1,6 +1,6 @@
 // app/dashboard/courts/page.tsx
 import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader";
-import { CourtList } from "@/features/court/components/CourtList";
+import { CourtListAdmin } from "@/features/court/components/CourtListAdmin";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,7 +31,7 @@ export default async function CourtsPage() {
                 }
             />
 
-            <CourtList courts={courts || []} />
+            <CourtListAdmin courts={courts || []} />
         </div>
     );
 }

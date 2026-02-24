@@ -5,7 +5,7 @@ export * from './components/CourtActionCard';
 export * from './components/CourtEditForm';
 export * from './components/CourtForm';
 export * from './components/CourtInfor';
-export * from './components/CourtList';
+export * from './components/CourtListAdmin';
 export * from './components/CourtListUser';
 export * from './components/NewCourtPage';
 export * from './components/UserCourtDetail';
