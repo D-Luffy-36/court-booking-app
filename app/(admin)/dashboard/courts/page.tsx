@@ -3,6 +3,7 @@ import { DashboardHeader } from "@/features/dashboard/components/DashboardHeader
 import { CourtListAdmin } from "@/features/court/components/CourtListAdmin";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import { Settings } from "lucide-react";
 
 export default async function CourtsPage() {
     // 1. Khởi tạo Supabase client phía server
@@ -20,18 +21,29 @@ export default async function CourtsPage() {
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-6">
             <DashboardHeader
                 title="Quản lý sân bóng"
                 description="Danh sách và trạng thái các sân thực tế."
                 actions={
-                    <Link href="/dashboard/courts/new" className="btn-primary inline-flex items-center gap-2">
-                        + Thêm sân mới
-                    </Link>
+                    <div className="flex gap-3">
+                        <Link href="/dashboard/settings" className="btn-secondary flex items-center gap-2">
+                            <Settings size={18} />
+                            Cấu hình chung
+                        </Link>
+                        <Link href="/dashboard/courts/new" className="btn-primary flex items-center gap-2">
+                            + Thêm sân mới
+                        </Link>
+                    </div>
                 }
             />
-
-            <CourtListAdmin courts={courts || []} />
+            
+            {/* Bảng quản lý full width */}
+            <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
+                <div className="overflow-x-auto">
+                    <CourtListAdmin courts={courts} />
+                </div>
+            </div>
         </div>
-    );
+    )
 }

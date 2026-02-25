@@ -41,16 +41,16 @@ export default function AdminCourtDetail({ court }: AdminCourtDetailProps) {
         if (!isEditing || !mounted) return null;
         return createPortal(
             <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm animate-in fade-in duration-200">
-                <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200">
+                <div className="bg-card rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] flex flex-col animate-in zoom-in-95 duration-200 border border-border">
                     {/* Header */}
-                    <div className="sticky top-0 bg-white border-b border-gray-200 px-6 py-5 rounded-t-2xl flex items-center justify-between">
+                    <div className="sticky top-0 bg-card border-b border-border px-6 py-5 rounded-t-2xl flex items-center justify-between">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900">Chỉnh sửa sân</h2>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <h2 className="text-2xl font-bold text-text-primary">Chỉnh sửa sân</h2>
+                            <p className="text-sm text-text-secondary mt-1">
                                 Cập nhật thông tin cho <span className="font-semibold text-primary">{court.name}</span>
                             </p>
                         </div>
-                        <button onClick={() => setIsEditing(false)} className="text-gray-400 hover:text-gray-600 transition-colors disabled:opacity-50" aria-label="Đóng">
+                        <button onClick={() => setIsEditing(false)} className="text-text-muted hover:text-text-primary transition-colors disabled:opacity-50" aria-label="Đóng">
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>

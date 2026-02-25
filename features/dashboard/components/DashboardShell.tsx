@@ -9,22 +9,15 @@ export function DashboardShell({
     children: React.ReactNode
 }) {
     return (
-        /* h-screen: ép toàn bộ layout cao đúng bằng màn hình và không cho cuộn cả trang */
-        <div className="flex h-screen overflow-hidden">
-
-            {/* Sidebar: Cố định độ rộng, h-full đảm bảo nó luôn cao hết màn hình */}
+        <div className="flex h-screen overflow-hidden bg-[#0a0a0a]">
             <DashboardSidebar />
 
             <div className="flex flex-col flex-1 min-w-0">
-                {/* Navbar: Sẽ nằm cố định ở trên cùng do flex-col */}
                 <DashboardNavbar />
 
-                {/* Main: 
-                    1. flex-1: chiếm toàn bộ không gian còn lại.
-                    2. overflow-y-auto: Chỉ cho phép cuộn bên trong vùng này khi nội dung dài. 
-                */}
-                <main className="flex-1 p-6 bg-background overflow-y-auto">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 p-4 md:p-6 overflow-y-auto custom-scrollbar">
+                    {/* Thay max-w-7xl bằng max-w-full để lấy hết không gian cho bảng */}
+                    <div className="max-w-[1600px] mx-auto w-full">
                         {children}
                     </div>
                 </main>

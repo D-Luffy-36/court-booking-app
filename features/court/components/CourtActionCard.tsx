@@ -42,11 +42,11 @@ const CourtActionCard = ({
     const status = getStatusConfig();
 
     return (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+        <div className="bg-card rounded-xl border border-border p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
             {/* Header - Status Badge */}
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                    <div className="text-sm font-medium text-gray-600">
+                    <div className="text-sm font-medium text-text-secondary">
                         Trạng thái
                     </div>
                     <div
@@ -59,7 +59,7 @@ const CourtActionCard = ({
             </div>
 
             {/* Divider */}
-            <div className="border-t border-gray-100"></div>
+            <div className="border-t border-border"></div>
 
             {/* Actions Section */}
             <div className="space-y-3">
@@ -81,7 +81,7 @@ const CourtActionCard = ({
                 <div className="grid grid-cols-2 gap-3">
                     <button
                         onClick={() => onEdit(court.id)}
-                        className="btn-secondary py-2.5 text-sm font-medium hover:bg-gray-50 hover:text-primary transition-colors"
+                        className="btn-secondary py-2.5 text-sm font-medium hover:bg-muted hover:text-primary transition-colors"
                     >
                         <span className="inline-flex items-center gap-2">
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

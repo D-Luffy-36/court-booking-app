@@ -79,9 +79,9 @@ export function CourtListAdmin({ courts = [] }: CourtListAdminProps) {
                     <tr>
                         <th className="p-4 text-center font-semibold text-text-secondary">Tên sân</th>
                         <th className="p-4 text-center font-semibold text-text-secondary">Trạng thái</th>
-                        <th className="p-4 text-center font-semibold text-text-secondary">Kích Thước</th>
-                        <th className="p-4 text-center font-semibold text-text-secondary">Giá (VND/giờ)</th>
-                        <th className="p-4 text-center font-semibold text-text-secondary">Lượt đặt hôm nay</th>
+                        <th className="p-4 text-center font-semibold text-text-secondary hidden md:table-cell">Kích Thước</th>
+                        <th className="p-4 text-center font-semibold text-text-secondary hidden md:table-cell">Giá (VND/giờ)</th>
+                        <th className="p-4 text-center font-semibold text-text-secondary hidden lg:table-cell">Lượt đặt hôm nay</th>
                         <th className="p-4 text-center font-semibold text-text-secondary">Hành động</th>
                     </tr>
                 </thead>
@@ -99,13 +99,13 @@ export function CourtListAdmin({ courts = [] }: CourtListAdminProps) {
                                         </span>
                                     </div>
                                 </td>
-                                <td className="p-4 text-center">
+                                <td className="p-4 text-center hidden md:table-cell">
                                     <span className="bg-background text-text-secondary text-xs font-bold px-2 py-1 rounded border border-border">
                                         {court.pitch_size}
                                     </span>
                                 </td>
-                                <td className="p-4 text-text-secondary text-center">{court.price_per_hour.toLocaleString('vi-VN')}</td>
-                                <td className="p-4 text-center text-text-secondary font-mono">5</td>
+                                <td className="p-4 text-text-secondary text-center hidden md:table-cell">{court.price_per_hour.toLocaleString('vi-VN')}</td>
+                                <td className="p-4 text-center text-text-secondary font-mono hidden lg:table-cell">5</td>
                                 <td className="p-4">
                                     <div className="flex items-center justify-center gap-2">
                                         <button

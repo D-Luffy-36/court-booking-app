@@ -48,7 +48,7 @@ export function CourtForm() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-sm border border-border p-8">
+        <div className="max-w-2xl mx-auto bg-card rounded-2xl shadow-sm border border-border p-8">
             {/* Error Alert */}
             {(errors.submit || apiError) && (
                 <div className="bg-error/10 border border-error/20 text-error px-4 py-3 rounded-lg flex items-start gap-3 mb-6">
@@ -130,15 +130,18 @@ export function CourtForm() {
                             required
                             min="0"
                             step="1000"
-                            placeholder="Ví dụ: 200000"
+                            // Thêm dòng này để set giá mặc định
+                            defaultValue={240000}
+                            placeholder="Ví dụ: 240000"
                             className={`input w-full pr-16 bg-background text-text-primary border-border focus:ring-primary ${errors.price ? "!border-error" : ""}`}
                             disabled={creating}
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium">
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted text-sm font-medium border-l pl-3 border-border">
                             VNĐ
                         </span>
                     </div>
                     {errors.price && <p className="text-error text-xs mt-1">{errors.price}</p>}
+                    <p className="text-[10px] text-text-muted mt-1 italic">* Giá mặc định đề xuất là 240.000đ/giờ</p>
                 </div>
 
                 <div className="flex items-center justify-end gap-4 pt-6 border-t border-border">
