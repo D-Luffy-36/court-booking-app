@@ -1,23 +1,39 @@
 
-
-
 -- 1. Tạo bảng bookings
 CREATE TABLE bookings (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    court_id UUID NOT NULL REFERENCES courts(id) ON DELETE CASCADE,
-    user_id UUID NOT NULL REFERENCES profiles(id) ON DELETE CASCADE,
+    
+    -- Foreign Keys: Chuyển sang SET NULL để giữ dữ liệu khi User/Sân bị xóa
+    court_id UUID REFERENCES courts(id) ON DELETE SET NULL,
+    user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+
+    -- SNAPSHOT: Thông tin cố định tại thời điểm đặt (Quan trọng cho báo cáo)
+    captured_user_name TEXT NOT NULL, 
+    captured_user_phone TEXT,        -- Cần thiết để chủ sân gọi khách nếu User xóa App
+    captured_court_name TEXT NOT NULL, 
+    
+    -- THỜI GIAN & GIÁ
     start_time TIMESTAMPTZ NOT NULL,
     end_time TIMESTAMPTZ NOT NULL,
     total_price NUMERIC(12, 2) NOT NULL DEFAULT 0,
+    
+    -- TRẠNG THÁI
     status TEXT NOT NULL DEFAULT 'pending' 
-        CHECK (status IN ('pending', 'confirmed', 'cancelled')),
-    notes TEXT DEFAULT '',
-    created_at TIMESTAMPTZ DEFAULT NOW(),
+        CHECK (status IN ('pending', 'confirmed', 'cancelled', 'archived')),
+    
+    -- THÔNG TIN BỔ SUNG
+    payment_status TEXT NOT NULL DEFAULT 'unpaid'
+        CHECK (payment_status IN ('unpaid', 'paid', 'refunded')),
+    notes TEXT, -- Khách hàng ghi chú (ví dụ: "Cần mượn thêm vợt")
+    internal_notes TEXT, -- Chủ sân ghi chú nội bộ (ví dụ: "Khách hay bùng")
 
-    -- Đảm bảo thời gian kết thúc phải sau thời gian bắt đầu
+    -- AUDIT LOGS
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW(),
+
+    -- RÀNG BUỘC LOGIC
     CONSTRAINT check_booking_times CHECK (end_time > start_time)
 );
-
 -- 2. Bật Row Level Security (RLS)
 ALTER TABLE bookings ENABLE ROW LEVEL SECURITY;
 
@@ -87,3 +103,49 @@ BEGIN
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
+
+-- 8. Tạo Trigger để gọi hàm validate_booking_duration trước khi insert hoặc update
+CREATE TRIGGER trg_validate_booking_time
+BEFORE INSERT OR UPDATE ON bookings
+FOR EACH ROW
+EXECUTE FUNCTION validate_booking_time();
+
+
+
+-- 1. Phần "Đích" (INSERT INTO): Khai báo danh sách các cột
+-- mà bạn muốn đổ dữ liệu vào bảng bookings.
+
+-- 2. Phần "Nguồn" (SELECT): Thay vì dùng từ khóa VALUES,
+-- bạn dùng SELECT để lấy dữ liệu thực tế đang nằm trong database.
+
+-- 3.Cơ chế Snapshot:
+-- p.full_name và c.name được copy thẳng vào bảng bookings.
+-- Sau này nếu User A có đổi tên thành "A Đẹp Trai", 
+-- thì dòng captured_user_name trong đơn hàng cũ vẫn mãi mãi là "Nguyen Van A".
+
+-- Chèn một đơn đặt sân mới bằng cách "Snapshot" dữ liệu từ các bảng liên quan
+INSERT INTO bookings (
+    user_id, 
+    court_id, 
+    captured_user_name, 
+    captured_court_name, 
+    total_price,
+    start_time,
+    end_time,
+    status
+) 
+SELECT 
+    p.id,           -- Lấy từ bảng profiles
+    c.id,           -- Lấy từ bảng courts
+    p.full_name,    -- Chụp ảnh tên user tại thời điểm này
+    c.name,         -- Chụp ảnh tên sân tại thời điểm này
+    500000,         -- Giá tiền (thường truyền từ frontend hoặc tính toán)
+    '2026-05-20 14:00', 
+    '2026-05-20 16:00',
+    'pending'
+FROM 
+    profiles p, 
+    courts c
+WHERE 
+    p.id = 'u123' 
+    AND c.id = 'court-999';
