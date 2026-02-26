@@ -37,3 +37,17 @@ CREATE INDEX idx_courts_not_deleted ON courts (is_deleted) WHERE is_deleted = fa
 CREATE VIEW active_courts AS
 SELECT * FROM courts
 WHERE is_deleted = false AND status != 'archived';
+
+-- A. View Courts (SELECT) - Public Access
+CREATE POLICY "Allow public read access" 
+ON courts FOR SELECT 
+TO public 
+USING (true);
+-- B. Create New Court (INSERT) - Admin Only
+CREATE POLICY "Allow admin to insert courts" 
+ON courts FOR INSERT 
+TO authenticated 
+WITH CHECK ((auth.jwt() ->> 'email') = 'pa3067832@gmail.com');
+
+
+-- C. Update Court (UPDATE) - Admin Only

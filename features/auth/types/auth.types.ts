@@ -18,6 +18,7 @@ export interface LoginData {
 
 export type AuthState = {
     user: User | null
+    role: string | null
     loading: boolean
     isAuthenticated: boolean
     userId: string | null

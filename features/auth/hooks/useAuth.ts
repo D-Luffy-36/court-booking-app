@@ -17,6 +17,9 @@ export function useAuth(): AuthState {
     // Lưu user hiện tại (null nếu chưa login)
     const [user, setUser] = useState<User | null>(null)
 
+    // lấy role từ profile để phân quyền UI (user hoặc admin)
+    const [role, setRole] = useState<string | null>(null)
+
     // Trạng thái loading khi đang kiểm tra session ban đầu
     const [loading, setLoading] = useState(true)
 
@@ -28,15 +31,48 @@ export function useAuth(): AuthState {
         await supabase.auth.signOut()
     }
 
+    /**
+     * Lấy role từ profiles table
+     */
+    const fetchRole = async (userId: string) => {
+        try {
+            const { data, error } = await supabase
+                .from('profiles')
+                .select('role')
+                .eq('id', userId)
+                .single()
+
+            if (error) {
+                console.error('Error fetching role:', error)
+                setRole(null)
+                return
+            }
+
+            setRole(data?.role ?? null)
+        } catch (error) {
+            console.error('Error fetching role:', error)
+            setRole(null)
+        }
+    }
+
     useEffect(() => {
 
         /**
          * 1️⃣ Lấy session hiện tại khi app mount
          * - Supabase lưu session trong storage
-         * - Nếu tồn tại → restore user
+         * - Nếu tồn tại → restore user và role
          */
         supabase.auth.getSession().then(({ data: { session } }) => {
-            setUser(session?.user ?? null)
+            const currentUser = session?.user ?? null
+            setUser(currentUser)
+
+            // Fetch role nếu có user
+            if (currentUser?.id) {
+                fetchRole(currentUser.id)
+            } else {
+                setRole(null)
+            }
+
             setLoading(false)
         })
 
@@ -50,7 +86,15 @@ export function useAuth(): AuthState {
         const {
             data: { subscription },
         } = supabase.auth.onAuthStateChange((_event, session) => {
-            setUser(session?.user ?? null)
+            const currentUser = session?.user ?? null
+            setUser(currentUser)
+
+            // Fetch role khi auth state thay đổi
+            if (currentUser?.id) {
+                fetchRole(currentUser.id)
+            } else {
+                setRole(null)
+            }
         })
 
         /**
@@ -66,6 +110,7 @@ export function useAuth(): AuthState {
      */
     return {
         user,                       // user object hoặc null
+        role,                       // role từ profile (user, admin, ...)
         loading,                    // đang check session hay không
         isAuthenticated: !!user,    // boolean tiện cho guard UI
         userId: user?.id ?? null,

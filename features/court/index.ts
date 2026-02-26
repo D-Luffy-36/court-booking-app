@@ -9,6 +9,7 @@ export * from './components/CourtListAdmin';
 export * from './components/CourtListUser';
 export * from './components/NewCourtPage';
 export * from './components/UserCourtDetail';
+export * from './components/VenueSidebar';
 export * from './hooks/useCourts';
 export * from './services/courtApi';
 export * from './types/court.types';

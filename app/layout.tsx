@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   // Tên hiển thị trên tab trình duyệt
-  title: "SportBooking - Đặt Sân Cầu Lông & Bóng Đá",
+  title: "An Sportify - Đặt Sân Bóng Đá",
 
   // Mô tả hiển thị khi chia sẻ link hoặc tìm kiếm trên Google
   description: "Tìm kiếm và đặt lịch sân thể thao trực tuyến nhanh chóng. Hệ thống đặt sân uy tín, giá tốt và nhiều ưu đãi.",
