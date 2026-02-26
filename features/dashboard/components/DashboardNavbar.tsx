@@ -39,8 +39,8 @@ export function DashboardNavbar() {
                 h-16 sticky top-0 z-50
                 border-b border-border-light
                 transition-all duration-300
-                ${hasScrolled 
-                    ? 'bg-surface/80 backdrop-blur-md shadow-lg' 
+                ${hasScrolled
+                    ? 'bg-surface/80 backdrop-blur-md shadow-lg'
                     : 'bg-surface/40 backdrop-blur-sm'
                 }
             `}
@@ -50,18 +50,18 @@ export function DashboardNavbar() {
                 {/* Left Section: Breadcrumbs + Search */}
                 <div className="flex items-center gap-8 flex-1 min-w-0">
                     {/* Breadcrumbs */}
-                    <div className="hidden lg:block flex-shrink-0">
+                    <div className="hidden lg:block shrink-0">
                         <NavbarBreadcrumbs />
                     </div>
 
                     {/* Search Bar */}
-                    <div className="flex-shrink-0">
+                    <div className="shrink-0">
                         <SearchCommandPalette />
                     </div>
                 </div>
 
                 {/* Right Section: Actions & User */}
-                <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="flex items-center gap-2 shrink-0">
                     {/* Settings Button */}
                     <button
                         className={`

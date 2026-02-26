@@ -17,12 +17,12 @@ export function SearchCommandPalette() {
                     rounded-lg px-4 py-2.5
                     bg-surface border border-border-light
                     transition-all duration-200
-                    ${isFocused 
-                        ? 'border-primary bg-surface-elevated shadow-lg' 
+                    ${isFocused
+                        ? 'border-primary bg-surface-elevated shadow-lg'
                         : 'hover:border-border hover:bg-surface-elevated/50'
                     }
                 `}
-                onClick={() => document.querySelector('input[type="search"]')?.focus()}
+                onClick={() => (document.querySelector('input[type="search"]') as HTMLInputElement)?.focus()}
             >
                 {/* Search Icon */}
                 <svg

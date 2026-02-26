@@ -37,7 +37,7 @@ export default async function CourtsPage() {
                     </div>
                 }
             />
-            
+
             {/* Bảng quản lý full width */}
             <div className="bg-card rounded-xl border border-border overflow-hidden shadow-sm">
                 <div className="overflow-x-auto">

@@ -38,16 +38,28 @@ CREATE VIEW active_courts AS
 SELECT * FROM courts
 WHERE is_deleted = false AND status != 'archived';
 
--- A. View Courts (SELECT) - Public Access
-CREATE POLICY "Allow public read access" 
+-- 1. Cho phép mọi người xem dữ liệu (Public Read)
+CREATE POLICY "Public: View courts" 
 ON courts FOR SELECT 
 TO public 
 USING (true);
--- B. Create New Court (INSERT) - Admin Only
-CREATE POLICY "Allow admin to insert courts" 
+
+-- 2. Quyền INSERT cho Admin
+CREATE POLICY "Admin: Insert courts" 
 ON courts FOR INSERT 
 TO authenticated 
 WITH CHECK ((auth.jwt() ->> 'email') = 'pa3067832@gmail.com');
 
+-- 3. Quyền UPDATE (Bao gồm cả Edit thông tin và Soft Delete)
+-- Chúng ta gộp C và D làm một vì bản chất cùng là hành động sửa đổi dòng dữ liệu
+CREATE POLICY "Admin: Update/Soft Delete courts" 
+ON courts FOR UPDATE 
+TO authenticated 
+USING ((auth.jwt() ->> 'email') = 'pa3067832@gmail.com')
+WITH CHECK ((auth.jwt() ->> 'email') = 'pa3067832@gmail.com');
 
--- C. Update Court (UPDATE) - Admin Only
+-- 4. (Tùy chọn) Quyền DELETE vật lý nếu bạn muốn Admin xóa hẳn khỏi DB
+CREATE POLICY "Admin: Delete courts" 
+ON courts FOR DELETE 
+TO authenticated 
+USING ((auth.jwt() ->> 'email') = 'pa3067832@gmail.com');

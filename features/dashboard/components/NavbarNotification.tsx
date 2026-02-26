@@ -42,8 +42,8 @@ export function NavbarNotification() {
                 className={`
                     relative p-2.5 rounded-lg
                     transition-all duration-200
-                    ${isOpen 
-                        ? 'bg-primary/10 text-primary' 
+                    ${isOpen
+                        ? 'bg-primary/10 text-primary'
                         : 'text-text-secondary hover:bg-border-light hover:text-text-primary'
                     }
                 `}
@@ -88,15 +88,15 @@ export function NavbarNotification() {
                                     className={`
                                         px-4 py-3 border-b border-border-light last:border-b-0
                                         cursor-pointer transition-colors duration-150
-                                        ${notif.read 
-                                            ? 'hover:bg-border-light/50' 
+                                        ${notif.read
+                                            ? 'hover:bg-border-light/50'
                                             : 'bg-primary/5 hover:bg-primary/10'
                                         }
                                     `}
                                 >
                                     <div className="flex items-start gap-3">
                                         {!notif.read && (
-                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary flex-shrink-0" />
+                                            <div className="mt-1.5 w-2 h-2 rounded-full bg-primary shrink-0" />
                                         )}
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-medium text-text-primary truncate">
