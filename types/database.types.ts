@@ -14,6 +14,106 @@ export type Database = {
   }
   public: {
     Tables: {
+      bookings: {
+        Row: {
+          booking_source: string
+          cancel_reason: string | null
+          cancelled_by: string | null
+          captured_court_name: string
+          captured_user_name: string
+          captured_user_phone: string | null
+          court_id: string | null
+          created_at: string | null
+          discount_amount: number
+          end_time: string
+          final_amount_paid: number | null
+          id: string
+          internal_notes: string | null
+          is_no_show: boolean | null
+          notes: string | null
+          payment_method: string | null
+          payment_status: string
+          start_time: string
+          status: string
+          subtotal_price: number
+          total_price: number
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          booking_source?: string
+          cancel_reason?: string | null
+          cancelled_by?: string | null
+          captured_court_name: string
+          captured_user_name: string
+          captured_user_phone?: string | null
+          court_id?: string | null
+          created_at?: string | null
+          discount_amount?: number
+          end_time: string
+          final_amount_paid?: number | null
+          id?: string
+          internal_notes?: string | null
+          is_no_show?: boolean | null
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          start_time: string
+          status?: string
+          subtotal_price?: number
+          total_price?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          booking_source?: string
+          cancel_reason?: string | null
+          cancelled_by?: string | null
+          captured_court_name?: string
+          captured_user_name?: string
+          captured_user_phone?: string | null
+          court_id?: string | null
+          created_at?: string | null
+          discount_amount?: number
+          end_time?: string
+          final_amount_paid?: number | null
+          id?: string
+          internal_notes?: string | null
+          is_no_show?: boolean | null
+          notes?: string | null
+          payment_method?: string | null
+          payment_status?: string
+          start_time?: string
+          status?: string
+          subtotal_price?: number
+          total_price?: number
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_cancelled_by_fkey"
+            columns: ["cancelled_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_court_id_fkey"
+            columns: ["court_id"]
+            isOneToOne: false
+            referencedRelation: "courts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       courts: {
         Row: {
           created_at: string | null
