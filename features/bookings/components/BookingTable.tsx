@@ -1,32 +1,16 @@
 "use client"
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Plus, Calendar, Clock, SlidersHorizontal } from 'lucide-react'
+import { Search, Plus, Calendar, Clock, SlidersHorizontal, MoreHorizontal } from 'lucide-react'
 import BookingStatus from './BookingStatus'
 import ActionButtons from './ActionButtons'
-import { Booking } from '../../bookings/types'
+import ActionMenu from './ActionMenu'
+import { Booking, BookingUI } from '../../bookings/types'
 import SkeletonRow from './SkeletonRow'
 import { TABS } from '../../bookings/constants/status'
+import { toast } from 'sonner'
 
-const container = {
-    hidden: { opacity: 0 },
-    show: {
-        opacity: 1,
-        transition: { staggerChildren: 0.05, delayChildren: 0.05 }
-    }
-}
-
-const rowVariants = {
-    hidden: { opacity: 0, y: 6 },
-    show: {
-        opacity: 1,
-        y: 0,
-        transition: { duration: 0.25, ease: 'easeInOut' }
-    },
-    exit: { opacity: 0, y: -4, transition: { duration: 0.15 } }
-}
-
-export default function BookingTable({ bookings, loading }: { bookings: Booking[]; loading?: boolean }) {
+export default function BookingTable({ bookings, loading }: { bookings: BookingUI[]; loading?: boolean }) {
     const [activeTab, setActiveTab] = useState<string>('all')
     const [searchQuery, setSearchQuery] = useState('')
 
@@ -36,234 +20,234 @@ export default function BookingTable({ bookings, loading }: { bookings: Booking[
         return matchesTab && matchesSearch
     })
 
+    // ... inside BookingTable component
+    const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false)
+    const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null)
+    const [actionType, setActionType] = useState<string | null>(null)
+
+    // Giả lập hàm gọi API để cập nhật trạng thái
+    const updateBookingStatus = (bookingId: string, newStatus: string): Promise<void> => {
+        console.log(`Updating booking ${bookingId} to status ${newStatus}`);
+        return new Promise(resolve => setTimeout(resolve, 1000)); // Giả lập độ trễ mạng
+    }
+
+    const handleAction = (type: string, booking: Booking) => {
+        setSelectedBooking(booking)
+        setActionType(type)
+
+        // Nếu là hành động nguy hiểm hoặc cần xác nhận
+        if (['CANCEL', 'DELETE', 'RESTORE'].includes(type)) {
+            setIsConfirmModalOpen(true)
+        } else {
+            // Nếu là hành động thực thi ngay (ví dụ: VIEW, PRINT)
+            executeAction(type, booking)
+        }
+    }
+
+    const executeAction = async (type: string, booking: Booking) => {
+        const loadingToast = toast.loading('Đang xử lý...')
+
+        try {
+            switch (type) {
+                case 'CONFIRM':
+                    // Giả lập gọi API
+                    await updateBookingStatus(booking.id, 'confirmed')
+                    toast.success(`Đã xác nhận đơn của ${booking.customerName}`, { id: loadingToast })
+                    break;
+
+                case 'CANCEL':
+                    await updateBookingStatus(booking.id, 'cancelled')
+                    toast.error(`Đã hủy đơn của ${booking.customerName}`, { id: loadingToast })
+                    break;
+
+                case 'RESTORE':
+                    await updateBookingStatus(booking.id, 'pending') // Phục hồi về trạng thái chờ
+                    toast.success(`Đã phục hồi đơn của ${booking.customerName}`, { id: loadingToast })
+                    break;
+
+                case 'CHECK_IN':
+                    await updateBookingStatus(booking.id, 'completed') // Chuyển sang completed sau khi chơi xong
+                    toast.success('Check-in thành công', { id: loadingToast })
+                    break;
+
+                case 'VIEW':
+                    // Trong thực tế, đây sẽ là nơi mở Drawer hoặc Modal chi tiết
+                    console.log('Xem chi tiết:', booking)
+                    toast.info('Mở modal xem chi tiết...', { id: loadingToast })
+                    break;
+
+                case 'EDIT':
+                    console.log('Chỉnh sửa:', booking)
+                    toast.info('Mở modal chỉnh sửa...', { id: loadingToast })
+                    break;
+
+                case 'RESCHEDULE':
+                    console.log('Đổi lịch:', booking)
+                    toast.info('Mở modal đổi lịch...', { id: loadingToast })
+                    break;
+
+                case 'PRINT':
+                    console.log('In phiếu đặt sân:', booking)
+                    toast.info('Đang chuẩn bị in phiếu đặt sân...', { id: loadingToast })
+                    // window.print(); // Ví dụ gọi hàm in của trình duyệt
+                    break;
+
+                case 'PRINT_INVOICE':
+                    console.log('In hóa đơn:', booking)
+                    toast.info('Đang chuẩn bị in hóa đơn...', { id: loadingToast })
+                    // window.print();
+                    break;
+
+                default:
+                    console.warn(`Hành động chưa được xử lý: ${type}`)
+                    toast.dismiss(loadingToast)
+                    break;
+            }
+
+            // RE-VALIDATE: Gọi lại hàm fetch danh sách từ server để đồng bộ UI
+            // refreshData(); 
+
+        } catch (error) {
+            toast.error('Có lỗi xảy ra, vui lòng thử lại', { id: loadingToast })
+        } finally {
+            setIsConfirmModalOpen(false)
+            setSelectedBooking(null)
+        }
+    }
+
     return (
-        <div className="flex flex-col gap-10 p-6 font-sans">
-            {/* ── Header ── */}
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+        <div className="w-full p-6 text-zinc-200">
+            {/* ── Top Bar: Title & Actions ── */}
+            <div className="flex flex-col mb-8 gap-4 md:flex-row md:items-center md:justify-between">
                 <div>
-                    <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-emerald-500">
-                        Quản lý hệ thống
-                    </p>
-                    <h1 className="text-[2rem] font-bold leading-none tracking-tight text-white">
-                        Lịch đặt chỗ
-                    </h1>
-                    <p className="mt-2 text-sm text-zinc-500">
-                        Theo dõi và xử lý các đơn đặt sân trong hệ thống.
-                    </p>
+                    <h1 className="text-2xl font-semibold text-white tracking-tight">Lịch đặt chỗ</h1>
+                    <p className="text-sm text-zinc-500">Quản lý {bookings.length} đơn đặt sân trong hệ thống</p>
                 </div>
 
-                <div className="flex items-center gap-2.5">
-                    {/* Search */}
-                    <div className="relative group">
-                        <Search
-                            className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-emerald-400 transition-colors duration-200"
-                            size={14}
-                        />
+                <div className="flex items-center gap-2">
+                    <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={16} />
                         <input
                             type="text"
+                            placeholder="Tìm tên khách hàng..."
                             value={searchQuery}
                             onChange={e => setSearchQuery(e.target.value)}
-                            placeholder="Tìm khách hàng..."
-                            className="h-9 w-52 rounded-lg border border-zinc-800 bg-zinc-900 pl-9 pr-4 text-sm text-zinc-200 placeholder-zinc-600 outline-none focus:border-emerald-500/40 focus:ring-1 focus:ring-emerald-500/20 transition-all duration-200"
+                            className="h-10 w-64 rounded-md border border-zinc-800 bg-zinc-950 pl-10 pr-4 text-sm outline-none focus:border-emerald-500/50 transition-colors"
                         />
                     </div>
-
-                    {/* Filter button */}
-                    <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-zinc-800 bg-zinc-900 text-zinc-500 hover:border-zinc-700 hover:text-zinc-300 transition-all duration-200 active:scale-95">
-                        <SlidersHorizontal size={14} />
-                    </button>
-
-                    {/* Create button */}
-                    <button className="relative flex h-9 items-center gap-2 overflow-hidden rounded-lg bg-emerald-600 px-4 text-sm font-semibold text-white transition-all duration-200 hover:bg-emerald-500 active:scale-95 shadow-lg shadow-emerald-900/40">
-                        <Plus size={15} />
+                    <button className="flex h-10 items-center gap-2 rounded-md bg-emerald-600 px-4 text-sm font-medium text-white hover:bg-emerald-500 transition-colors">
+                        <Plus size={18} />
                         Tạo mới
                     </button>
                 </div>
             </div>
 
-            {/* ── Main Card ── */}
-            <div className="rounded-2xl border border-zinc-800/60 bg-zinc-900/50 backdrop-blur-sm overflow-hidden shadow-2xl shadow-black/40">
+            {/* ── Content Card ── */}
+            <div className="rounded-lg border border-zinc-800 bg-zinc-950 overflow-hidden">
 
-                {/* Tabs + Count Bar */}
-                <div className="flex items-center justify-between border-b border-zinc-800/80 px-5 pt-3 pb-0 bg-zinc-900/30">
-                    <nav className="flex gap-0.5">
-                        {TABS.map((tab) => {
-                            const count = tab.key === 'all'
-                                ? bookings.length
-                                : bookings.filter(b => b.status === tab.key).length
-                            const isActive = activeTab === tab.key
-
-                            return (
-                                <button
-                                    key={tab.key}
-                                    onClick={() => setActiveTab(tab.key)}
-                                    className={`relative px-4 py-2.5 text-sm font-medium transition-all duration-200 ${isActive
-                                        ? 'text-white'
-                                        : 'text-zinc-500 hover:text-zinc-300'
-                                        }`}
-                                >
-                                    {tab.label}
-                                    {count > 0 && (
-                                        <span className={`ml-2 inline-flex h-4.5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums transition-all ${isActive
-                                            ? 'bg-emerald-500/20 text-emerald-400'
-                                            : 'bg-zinc-800 text-zinc-500'
-                                            }`}>
-                                            {count}
-                                        </span>
-                                    )}
-                                    {/* Active underline */}
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="tab-underline"
-                                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-t-full"
-                                            transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                                        />
-                                    )}
-                                </button>
-                            )
-                        })}
+                {/* Tabs Navigation */}
+                <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/50 px-4">
+                    <nav className="flex">
+                        {TABS.map((tab) => (
+                            <button
+                                key={tab.key}
+                                onClick={() => setActiveTab(tab.key)}
+                                className={`relative px-4 py-3 text-sm font-medium transition-colors ${activeTab === tab.key ? 'text-emerald-400' : 'text-zinc-500 hover:text-zinc-300'
+                                    }`}
+                            >
+                                {tab.label}
+                                {activeTab === tab.key && (
+                                    <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500" />
+                                )}
+                            </button>
+                        ))}
                     </nav>
-
-                    <span className="mb-1 text-[11px] text-zinc-600 font-medium pr-1">
-                        {filteredBookings.length} kết quả
-                    </span>
                 </div>
 
                 {/* ── Table Header ── */}
-                <div className="hidden md:grid grid-cols-12 gap-4 px-8 py-4 border-b border-zinc-800/50 bg-zinc-900/10">
-                    <div className="col-span-4 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-600">Khách hàng</div>
-                    <div className="col-span-3 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-600">Lịch trình</div>
-                    <div className="col-span-2 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-600">Thanh toán</div>
-                    <div className="col-span-2 text-[10px] font-bold uppercase tracking-[0.12em] text-zinc-600">Trạng thái</div>
+                <div className="grid grid-cols-12 gap-4 px-6 py-3 border-b border-zinc-800 bg-zinc-900/30 text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                    <div className="col-span-4">Khách hàng</div>
+                    <div className="col-span-3">Thời gian & Dịch vụ</div>
+                    <div className="col-span-2">Thanh toán</div>
+                    <div className="col-span-2">Trạng thái</div>
+                    <div className="col-span-1 text-right">Thao tác</div>
                 </div>
 
                 {/* ── Table Body ── */}
-                <AnimatePresence mode="wait">
-                    {loading ? (
-                        <div className="divide-y divide-zinc-800/40">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                                <div key={i} className="px-6 py-5">
-                                    <SkeletonRow />
-                                </div>
-                            ))}
-                        </div>
-                    ) : filteredBookings.length > 0 ? (
-                        <motion.div
-                            key={activeTab + searchQuery}
-                            initial="hidden"
-                            animate="show"
-                            variants={container}
-                            className="divide-y divide-zinc-800/40"
-                        >
-                            {filteredBookings.map((booking) => (
-                                <motion.div
+                <div className="divide-y divide-zinc-800">
+                    <AnimatePresence mode="wait">
+                        {loading ? (
+                            Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+                        ) : filteredBookings.length > 0 ? (
+                            filteredBookings.map((booking) => (
+                                <div
                                     key={booking.id}
-                                    variants={rowVariants}
-                                    className="group grid grid-cols-1 md:grid-cols-12 gap-4 px-8 py-5 items-center relative transition-colors duration-200 bg-zinc-900/20 hover:bg-zinc-900/40 rounded-lg"
+                                    className="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-zinc-900/40 transition-colors group"
                                 >
-                                    {/* Hover accent line */}
-                                    <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-r-full" />
-
-                                    {/* ── Customer Info ── */}
-                                    <div className="col-span-1 md:col-span-4 flex items-center gap-4 min-w-0">
-                                        {/* Avatar */}
-                                        <div className="relative shrink-0">
-                                            <div className="h-9 w-9 flex items-center justify-center rounded-xl bg-linear-to-br from-zinc-700 to-zinc-800 border border-zinc-700/60 text-sm font-bold text-white shadow-inner">
-                                                {booking.customerName.charAt(0)}
-                                            </div>
-                                            {/* Online dot placeholder */}
-                                            <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full border-2 border-zinc-950 bg-emerald-500" />
+                                    {/* Customer */}
+                                    <div className="col-span-4 flex items-center gap-3">
+                                        <div className="h-9 w-9 flex shrink-0 items-center justify-center rounded bg-zinc-800 text-xs font-bold text-zinc-400">
+                                            {booking.customerName.charAt(0)}
                                         </div>
-
                                         <div className="flex flex-col min-w-0">
-                                            <span className="font-semibold text-[13.5px] text-zinc-100 truncate group-hover:text-white transition-colors">
-                                                {booking.customerName}
-                                            </span>
-                                            <span className="text-[11px] font-mono text-zinc-600 tracking-tight">
-                                                #{booking.id.split('-').pop()?.toUpperCase()}
-                                            </span>
+                                            <span className="text-sm font-medium text-zinc-100 truncate">{booking.customerName}</span>
+                                            <span className="text-[11px] text-zinc-500 font-mono uppercase">ID: {booking.id.split('-').pop()}</span>
                                         </div>
                                     </div>
 
-                                    {/* ── Schedule Info ── */}
-                                    <div className="col-span-1 md:col-span-3 flex flex-col gap-2 min-w-0">
-                                        <div className="flex items-center gap-2">
-                                            <Clock size={13} className="text-zinc-600 shrink-0" />
-                                            <span className="text-[13px] font-semibold text-zinc-200 truncate">{booking.time}</span>
-                                            <span className="text-[10px] px-1.5 py-0.5 rounded-md bg-zinc-800/80 text-zinc-400 border border-zinc-700/50 font-medium shrink-0">
+                                    {/* Schedule */}
+                                    <div className="col-span-3 flex flex-col gap-1">
+                                        <div className="flex items-center gap-2 text-sm text-zinc-200">
+                                            <Clock size={14} className="text-zinc-500" />
+                                            <span>{booking.time}</span>
+                                            <span className="text-[10px] bg-zinc-800 px-1.5 py-0.5 rounded text-zinc-400 border border-zinc-700">
                                                 {booking.service.split('-').pop()}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-2">
-                                            <Calendar size={12} className="text-zinc-700 shrink-0" />
-                                            <span className="text-[12px] text-zinc-500">
-                                                {new Date(booking.date).toLocaleDateString('vi-VN', {
-                                                    weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric'
-                                                })}
-                                            </span>
+                                        <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                            <Calendar size={13} />
+                                            <span>{new Date(booking.date).toLocaleDateString('vi-VN')}</span>
                                         </div>
                                     </div>
 
-                                    {/* ── Price Info ── */}
-                                    <div className="col-span-1 md:col-span-2 min-w-0">
-                                        <div className="text-[14px] font-bold text-white tabular-nums tracking-tight">
-                                            {booking.amount.toLocaleString('vi-VN')}
-                                            <span className="text-emerald-500 font-semibold">₫</span>
+                                    {/* Price */}
+                                    <div className="col-span-2">
+                                        <div className="text-sm font-semibold text-white">
+                                            {booking.amount.toLocaleString('vi-VN')}₫
                                         </div>
-                                        <div className="flex items-center gap-1 mt-0.5">
-                                            <div className="h-1 w-1 rounded-full bg-emerald-500" />
-                                            <span className="text-[10px] text-zinc-600 font-medium uppercase tracking-wide">
-                                                Đã thanh toán
-                                            </span>
-                                        </div>
+                                        <span className="text-[10px] text-emerald-500/80 font-medium">Đã nhận</span>
                                     </div>
 
-                                    {/* ── Status Info ── */}
-                                    <div className="col-span-1 md:col-span-2 flex items-center justify-center min-w-0">
+                                    {/* Status */}
+                                    <div className="col-span-2">
                                         <BookingStatus status={booking.status} />
                                     </div>
 
-
-                                </motion.div>
-                            ))}
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="empty"
-                            initial={{ opacity: 0, y: 8 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="flex flex-col items-center justify-center py-24 text-zinc-600"
-                        >
-                            <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl border border-zinc-800 bg-zinc-900/50">
-                                <Search size={24} className="opacity-40" />
+                                    {/* Actions */}
+                                    <div className="col-span-1 text-right">
+                                        <ActionMenu booking={booking} onAction={handleAction} />
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="py-20 text-center text-zinc-600 text-sm">
+                                Không tìm thấy dữ liệu phù hợp.
                             </div>
-                            <p className="text-sm font-medium text-zinc-500">Không tìm thấy kết quả nào</p>
-                            <p className="mt-1 text-xs text-zinc-700">Thử thay đổi bộ lọc hoặc từ khoá tìm kiếm</p>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        )}
+                    </AnimatePresence>
+                </div>
 
                 {/* ── Footer ── */}
-                {filteredBookings.length > 0 && !loading && (
-                    <div className="flex items-center justify-between border-t border-zinc-800/60 bg-zinc-900/20 px-6 py-3">
-                        <span className="text-xs text-zinc-600">
-                            Hiển thị <span className="text-zinc-400 font-medium">{filteredBookings.length}</span> / {bookings.length} đơn
-                        </span>
-                        <div className="flex items-center gap-1">
-                            {[1, 2, 3].map(p => (
-                                <button
-                                    key={p}
-                                    className={`h-7 w-7 rounded-md text-xs font-medium transition-all ${p === 1
-                                        ? 'bg-zinc-800 text-white'
-                                        : 'text-zinc-600 hover:text-zinc-400'
-                                        }`}
-                                >
-                                    {p}
-                                </button>
-                            ))}
-                        </div>
+                <div className="flex items-center justify-between border-t border-zinc-800 px-6 py-4 bg-zinc-900/20">
+                    <p className="text-xs text-zinc-500">
+                        Hiển thị <span className="font-medium text-zinc-300">{filteredBookings.length}</span> trên {bookings.length} kết quả
+                    </p>
+                    <div className="flex gap-2">
+                        <button className="px-3 py-1 text-xs border border-zinc-800 rounded hover:bg-zinc-800 disabled:opacity-50">Trước</button>
+                        <button className="px-3 py-1 text-xs border border-zinc-800 rounded bg-zinc-800">1</button>
+                        <button className="px-3 py-1 text-xs border border-zinc-800 rounded hover:bg-zinc-800">Sau</button>
                     </div>
-                )}
+                </div>
             </div>
         </div>
     )

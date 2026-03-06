@@ -2,13 +2,16 @@
 
 import dynamic from 'next/dynamic'
 import SkeletonRow from './SkeletonRow'
-import { Booking } from '../types'
-import { Suspense } from 'react'
+import { RawBooking, BookingUI } from '../types'
+import { bookingMapper } from '../utils/booking.mapper'
 
 const BookingTable = dynamic(() => import('./BookingTable'), { ssr: false })
 
-export default function BookingTableWrapper({ bookings, loading }: { bookings: Booking[]; loading?: boolean }) {
+export default function BookingTableWrapper({ bookings, loading }: { bookings: RawBooking[]; loading?: boolean }) {
+    // convert raw data to UI-friendly form on client
+    const uiBookings: BookingUI[] = bookings.map(bookingMapper.toUI)
+
     return (
-        <BookingTable bookings={bookings} loading={loading} />
+        <BookingTable bookings={uiBookings} loading={loading} />
     )
 }
