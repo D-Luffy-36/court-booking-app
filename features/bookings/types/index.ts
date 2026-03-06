@@ -36,10 +36,23 @@ export interface BookingUI {
     date: string
     time: string
     amount: number
-    service: string          // e.g. court or booking service name shown in table
+    duration: string          // e.g. court or booking service name shown in table
     status: BookingStatusType
     createdAt: string
 }
+
+export const ACTIONS = {
+    VIEW: 'VIEW',
+    CONFIRM: 'CONFIRM',
+    EDIT: 'EDIT',
+    CHECK_IN: 'CHECK_IN',
+    RESCHEDULE: 'RESCHEDULE',
+    PRINT: 'PRINT',
+    PRINT_INVOICE: 'PRINT_INVOICE',
+    RESTORE: 'RESTORE',
+    CANCEL: 'CANCEL',
+} as const;
+
 
 // legacy type alias used throughout feature (kept for backwards compatibility)
 export type Booking = BookingUI;

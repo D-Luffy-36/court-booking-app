@@ -18,8 +18,8 @@ export const bookingMapper = {
             courtName: raw.captured_court_name,
             date: raw.start_time, // Lưu ISO string để component Table tự format date
             time: `${startTimeStr} - ${endDateStr}`,
-            // Thêm trường service để UI hiển thị "60 phút" hoặc "Sân 1"
-            service: `${duration} phút`,
+            // Thêm trường duration để UI hiển thị "60 phút" hoặc "Sân 1"
+            duration: `${duration} phút`,
             amount: parseFloat(raw.total_price), // Chuyển từ string sang number để format tiền
             status: raw.status,
             createdAt: raw.created_at

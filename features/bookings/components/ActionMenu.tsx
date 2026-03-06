@@ -2,20 +2,9 @@
 import React, { useCallback } from 'react'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import { MoreHorizontal, Eye, Edit2, Trash2, CheckCircle, UserCheck, CalendarDays, Printer, FileText, RefreshCw } from 'lucide-react'
-import { Booking } from '../types';
+import { Booking, ACTIONS } from '../types';
 
 // move action constants out for cleanliness
-const ACTIONS = {
-    VIEW: 'VIEW',
-    CONFIRM: 'CONFIRM',
-    EDIT: 'EDIT',
-    CHECK_IN: 'CHECK_IN',
-    RESCHEDULE: 'RESCHEDULE',
-    PRINT: 'PRINT',
-    PRINT_INVOICE: 'PRINT_INVOICE',
-    RESTORE: 'RESTORE',
-    CANCEL: 'CANCEL',
-} as const;
 
 type ActionType = (typeof ACTIONS)[keyof typeof ACTIONS];
 
